@@ -52,7 +52,7 @@ PLANT_DATA = {
     "nuez":{
         "carta":load_img("img/nuez_carta.png"),
         "plantada":load_img("img/nuez1.png"),
-        "plantada2":load_img("img/nuez3.png"),
+        "plantada2":load_img("img/nuez2.png"),
         "plantada3":load_img("img/nuez3.png")
 }
 }
@@ -193,8 +193,12 @@ class Plant(pygame.sprite.Sprite):
                 self.kill()
                 plantas_ocupadas.remove((self.rect.x,self.rect.y))
             if self.num == 3:
-                if self.hp <= 50:
+                if self.hp <= 1333:
+                    self.image = PLANT_DATA[tipos_lista[3]]["plantada3"]
+                    self.image.set_colorkey(WHITE)
+                elif self.hp <= 2666:
                     self.image = PLANT_DATA[tipos_lista[3]]["plantada2"]
+                    self.image.set_colorkey(WHITE)
             if self.num == 0:
                 if now -  self.ultimo_sol >= self.sun_time:
                     sun = Sun(self.rect.x,self.rect.y)
@@ -380,7 +384,7 @@ fond_img = pygame.image.load("img/fond.png")
 fond_img.set_colorkey(WHITE)
 
 zombie_hp = [200,370,1100]
-plant_hp = [100,100,100,1000]
+plant_hp = [100,100,100,4000]
 
 crunch = pygame.mixer.Sound("sound/crunch.mp3")
 crunch2 = pygame.mixer.Sound("sound/crunch2.mp3")
