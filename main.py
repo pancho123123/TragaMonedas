@@ -184,7 +184,7 @@ class Plant(pygame.sprite.Sprite):
             self.velocidad_ataque = 1500
         if num == 0:
             self.ultimo_sol = 0
-            self.sun_time = randint(7000,17000)
+            self.sun_time = randint(4000,20000)
 
     def update(self):
         now = pygame.time.get_ticks() 
@@ -206,7 +206,7 @@ class Plant(pygame.sprite.Sprite):
                     all_sprites.add(sun,suncrown)
                     suns.add(sun) 
                     self.ultimo_sol = pygame.time.get_ticks()
-                    self.sun_time = randint(7000,17000)
+                    self.sun_time = randint(4000,20000)
             if self.num == 1 or self.num == 2:
                 if now - self.ultimo_ataque >= self.velocidad_ataque:
                     self.shoot()
@@ -237,8 +237,9 @@ class Sun(pygame.sprite.Sprite):
         self.speed = speed
 
     def update(self):
-        self.pos_y += self.speed 
-        self.rect.y = int(self.pos_y)
+        if self.rect.bottom < HEIGHT - self.image.get_height():
+            self.pos_y += self.speed 
+            self.rect.y = int(self.pos_y)
 
 class SunCrown(pygame.sprite.Sprite):
     def __init__(self,sun):
@@ -497,11 +498,6 @@ while running:
                         imagen_fantasma = None
     if carga1:
         carga1 = False
-#        for p in all_sprites:
-#            if isinstance(palanca, Palanca):
-#                pass
-#            else:           
-#                p.kill()
         all_sprites.empty()
         palanca = Palanca()
         all_sprites.add(palanca)
@@ -516,6 +512,7 @@ while running:
                 zombie.hp -= 20
                 if guisante.num == 1:
                     zombie.state = 1
+                    zombie.cooldown_ataque = 1000
                     zombie.last_hit = pygame.time.get_ticks()
               
     if now > sun_spawn_time:
@@ -556,6 +553,16 @@ while running:
                         waiting = False
                         carga1 = True
     if score >= 2000:
+        draw_text(screen,f"{score}",20,50,63,BLACK)
+        draw_bar(screen,WIDTH -192,HEIGHT - 17,(255,255,125),score /20)
+        draw_bar(screen,WIDTH -192,HEIGHT - 16,(233,244,114),score /20)
+        draw_bar(screen,WIDTH -192,HEIGHT - 15,(200,228,95),score /20)
+        draw_bar(screen,WIDTH -192,HEIGHT - 14,(164,211,74),score /20)
+        draw_bar(screen,WIDTH -192,HEIGHT - 13,(121,189,52),score /20)
+        draw_bar(screen,WIDTH -192,HEIGHT - 12,(82,170,31),score /20)
+        draw_bar(screen,WIDTH -192,HEIGHT - 11,(49,154,12),score /20)
+        draw_text(screen,f"{score} / 2000 Sun",13,WIDTH - 120,HEIGHT - 22,(223,193,97))
+        pygame.display.flip()
         win.play()
         waiting = True
         while waiting:
