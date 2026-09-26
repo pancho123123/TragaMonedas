@@ -212,7 +212,8 @@ class Plant(pygame.sprite.Sprite):
                 self.target = [z for z in self.target if z.hp >0]
                 for zombie in zombies:
                     if abs(zombie.rect.bottom - self.rect.bottom) < 40:
-                        self.target.append(zombie)
+                        if zombie not in self.target:
+                            self.target.append(zombie)
                 if self.target:
                     if now - self.ultimo_ataque >= self.velocidad_ataque:
                         self.shoot()
