@@ -180,6 +180,7 @@ class Plant(pygame.sprite.Sprite):
         self.spawn_time = 30000
         self.start_time = pygame.time.get_ticks()
         if num == 1 or num == 2:
+            self.target = []
             self.ultimo_ataque = 0
             self.velocidad_ataque = 1500
         if num == 0:
@@ -208,9 +209,14 @@ class Plant(pygame.sprite.Sprite):
                     self.ultimo_sol = pygame.time.get_ticks()
                     self.sun_time = randint(4000,20000)
             if self.num == 1 or self.num == 2:
-                if now - self.ultimo_ataque >= self.velocidad_ataque:
-                    self.shoot()
-                    self.ultimo_ataque = pygame.time.get_ticks()
+                self.target = [z for z in self.target if z.hp >0]
+                for zombie in zombies:
+                    if abs(zombie.rect.bottom - self.rect.bottom) < 40:
+                        self.target.append(zombie)
+                if self.target:
+                    if now - self.ultimo_ataque >= self.velocidad_ataque:
+                        self.shoot()
+                        self.ultimo_ataque = pygame.time.get_ticks()
         elif self.state == 0:
             if now - self.start_time >= self.spawn_time:
                 self.kill() 
