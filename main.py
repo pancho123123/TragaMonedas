@@ -389,7 +389,7 @@ for img in stick_list:
 diam_img = pygame.image.load("img/diam1.png")
 
 fond_img = pygame.image.load("img/fond.png")
-fond_img.set_colorkey(WHITE)
+#fond_img.set_colorkey(WHITE)
 
 zombie_hp = [200,370,1100]
 plant_hp = [100,100,100,4000]
