@@ -93,15 +93,21 @@ def get_posicion_mas_cercana(mouse_pos):
     return mas_cercana
 
 class Zombie(pygame.sprite.Sprite):
-    def __init__(self,num,plants):
+    def __init__(self,tipo,plants):
         super().__init__()
-        self.num = num
-        self.image = zombie_img[num]
+        self.tipo = tipo
+        self.image = zombie_img[tipo]
         self.image.set_colorkey(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x = 900
         self.rect.bottom = random.choice([170,270,370,470,570])
-        self.hp = zombie_hp[num]
+        #zombie_hp = [200,370,1100]
+        self.hp = zombie_hp[tipo]
+        if self.tipo == 0:
+            self.hp_para_perder_armadura = 0
+        elif self.tipo == 1 or self.tipo == 2:
+            self.hp_para_perder_armadura = 200
+        self.tiene_armadura = self.tipo != 0
         self.speed = 0.1
         self.pos_x = float(self.rect.x)
         self.pos_y = float(self.rect.y)
@@ -117,10 +123,16 @@ class Zombie(pygame.sprite.Sprite):
 
     def update(self):
         now = pygame.time.get_ticks() 
-        if self.num == 2:        
+        if self.tiene_armadura and self.hp <= self.hp_para_perder_armadura:
+            self.tiene_armadura = False
+            self.tipo = 0
+            self.rect.y += 20
+            # self.frames = ZOMBIE_ASSETS[0]
+            # self.frame_index = 0
+        if self.tipo == 2:        
             if self.hp <= 370:        
                 self.image = zombie_img[1]
-        if self.num == 1:
+        if self.tipo == 1:
             if self.hp <= 200:
                 self.image = zombie_img[0]       
         if self.hp <= 0:
@@ -137,7 +149,7 @@ class Zombie(pygame.sprite.Sprite):
                 return
         if self.estado == "walk":
             for p in self.plants:
-                mismo_carril = abs(p.rect.centery- self.rect.centery) < 30
+                mismo_carril = abs(p.rect.bottom- self.rect.bottom) < 30
                 tocando = self.rect.colliderect(p.rect)
                 if mismo_carril and tocando:
                     self.estado = "atacando"
