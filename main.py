@@ -472,7 +472,7 @@ while running:
                 if d.rect.left  <= mouse_x <= d.rect.right and d.rect.top <= mouse_y <= d.rect.bottom:
                     d.kill()
                     money += 1000
-            if WIDTH//2 + 100 <= mouse_x <= WIDTH//2 + 200 and 20 <= mouse_y <= 100:
+            if palanca.rect.collidepoint(event.pos):
                 if palanca.pos == 0:
                     if score >= 25:
                         giro_palanca()
