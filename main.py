@@ -596,8 +596,8 @@ while running:
 
     if len(zombies) < max_zombies_en_pantalla:
         if now > zombie_spawn_time:
-            elapsed = now - game_start_time = min(25,3 + elapsed//45000)
-            max_zomies_en_pantalla
+            elapsed = now - game_start_time 
+            max_zomies_en_pantalla = min(25,3 + elapsed//45000)
             if elapsed < 60000:
                 current_interval = randint(9000,11000)
                 tipo = 0
