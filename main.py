@@ -481,7 +481,7 @@ money = 0
 carga1 = False
 game_start_time = pygame.time.get_ticks()
 zombie_spawn_time = game_start_time + 25000
-max_zombies_en_panatalla = 8
+max_zombies_en_pantalla = 8
 running = True
 while running:
     clock.tick(60)
