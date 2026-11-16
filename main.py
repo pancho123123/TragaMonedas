@@ -596,24 +596,24 @@ while running:
 
     if len(zombies) < max_zombies_en_pantalla:
         if now > zombie_spawn_time:
-            elapsed = now - game_start_time
-            if elapsed < 95000:
+            elapsed = now - game_start_time = min(25,3 + elapsed//45000)
+            max_zomies_en_pantalla
+            if elapsed < 60000:
                 current_interval = randint(9000,11000)
                 tipo = 0
-            elif elapsed < 360000:
-                max_zombies_en_pantalla += 1
+            elif elapsed < 95000:
                 current_interval = randint(6000,8000)
+                tipo = 0
+            elif elapsed < 180000:
+                current_interval = randint(3500,5000)
                 tipo = random.choice([0,0,0,0,1])
-
+            elif elapsed < 360000:
+                current_interval = randint(3000,4000)
+                tipo = random.choice([0,0,0,0,1])
             else:
-                extra_dificultad = (elapsed - 180000)//30000 * 300
+                extra_dificultad = (elapsed - 180000)//30000 * 300  
                 current_interval = max(1800,4000 - extra_dificultad)
-                
-                if zombie_count > 40:
-                    tipo = random.choice([0,0,0,0,0,0,0,0,1,1,2])
-                else:
-                    tipo = random.choice([0,0,0,0,1])
-            
+                tipo = random.choice([0,0,0,0,0,0,0,1,1,2])
             
             
             zombie = Zombie(tipo, plants)    
