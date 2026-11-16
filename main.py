@@ -449,6 +449,7 @@ fond_img = pygame.image.load("img/fond.png")
 zombie_hp = [200,370,1100]
 plant_hp = [100,100,100,4000]
 
+sun_being_collected = pygame.mixer.Sound("sound/Sun_Being_Collected.mp3")
 crunch = pygame.mixer.Sound("sound/crunch.mp3")
 crunch2 = pygame.mixer.Sound("sound/crunch2.mp3")
 disparo = pygame.mixer.Sound("sound/disparo.mp3")
@@ -511,6 +512,7 @@ while running:
             mouse_x, mouse_y = event.pos
             for sun in suns:
                 if sun.rect.left -16  <= mouse_x <= sun.rect.right + 16 and sun.rect.top - 16 <= mouse_y <= sun.rect.bottom + 16:
+                    sun_being_collected.play()
                     sun.kill()
                     score += 25
             for d in diams:
