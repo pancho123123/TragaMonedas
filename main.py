@@ -92,6 +92,37 @@ def get_posicion_mas_cercana(mouse_pos):
             mas_cercana = (gx, gy)
     return mas_cercana
 
+#ZOMBIE_FRAMES = []
+#for i in range(1,202):
+#    img = pygame.image.load(f"img/walk/1/{i}.png").convert_alpha()
+#    img = pygame.transform.scale(img,(80,120))
+#    ZOMBIE_FRAMES.append(img)
+#
+#ZOMBIE_CONO_FRAMES = []
+#for i in range(1,202):
+#    img = pygame.image.load(f"img/walk/2/{i}.png").convert_alpha()
+#    img = pygame.transform.scale(img,(80,120))
+#    ZOMBIE_CONO_FRAMES.append(img)
+
+ZOMBIE_ASSETS = {
+0:[], # normal
+1:[], # cono
+2:[]  # balde
+}
+
+def cargar_frames(carpeta, cantidad, scalex, scaley ):
+    frames = []
+    for i in range(1,cantidad):
+        img = pygame.image.load(f"img/walk/{carpeta}/{i}.png").convert_alpha()
+        img = pygame.transform.scale(img,(scalex,scaley))
+        img.set_colorkey(WHITE)
+        frames.append(img)
+    return frames
+
+ZOMBIE_ASSETS[0] = cargar_frames("1",202,105,120)
+ZOMBIE_ASSETS[1] = cargar_frames("2",202,100,140)
+ZOMBIE_ASSETS[2] = cargar_frames("1",120,115,135)
+
 class Zombie(pygame.sprite.Sprite):
     def __init__(self,tipo,plants):
         super().__init__()
@@ -108,6 +139,7 @@ class Zombie(pygame.sprite.Sprite):
         elif self.tipo == 1 or self.tipo == 2:
             self.hp_para_perder_armadura = 200
         self.tiene_armadura = self.tipo != 0
+        self.hp = zombie_hp[tipo]
         self.speed = 0.1
         self.pos_x = float(self.rect.x)
         self.pos_y = float(self.rect.y)
@@ -120,6 +152,11 @@ class Zombie(pygame.sprite.Sprite):
         self.estado = "walk"
         self.objetivo = None
         self.plants = plants
+        self.frames = ZOMBIE_ASSETS[self.tipo]
+        self.frame_index = 0
+        self.last_update = pygame.time.get_ticks()
+        self.animation_speed = 30
+        
 
     def update(self):
         now = pygame.time.get_ticks() 
@@ -127,8 +164,8 @@ class Zombie(pygame.sprite.Sprite):
             self.tiene_armadura = False
             self.tipo = 0
             self.rect.y += 20
-            # self.frames = ZOMBIE_ASSETS[0]
-            # self.frame_index = 0
+            self.frames = ZOMBIE_ASSETS[0]
+            self.frame_index = 0
         if self.tipo == 2:        
             if self.hp <= 370:        
                 self.image = zombie_img[1]
@@ -155,9 +192,16 @@ class Zombie(pygame.sprite.Sprite):
                     self.estado = "atacando"
                     self.objetivo = p
                     return
-            self.move()
+            self.move()  
+            if now - self.last_update >self.animation_speed:
+                self.last_update = now
+                self.frame_index += 1
+                if self.frame_index >= len(self.frames):
+                    self.frame_index = 0
+                self.image = self.frames[self.frame_index]
         if self.state == 1:
             if now -self.last_hit > self.freeze_time:
+                self.cooldown_ataque = 500
                 self.state = 0
     def move(self):
         if self.state == 0:
@@ -192,11 +236,11 @@ class Plant(pygame.sprite.Sprite):
         self.spawn_time = 30000
         self.start_time = pygame.time.get_ticks()
         if num == 1 or num == 2:
-            self.target = []
             self.ultimo_ataque = 0
             self.velocidad_ataque = 1500
+            self.target = []
         if num == 0:
-            self.ultimo_sol = 0
+            self.ultimo_sol = pygame.time.get_ticks()
             self.sun_time = randint(4000,20000)
 
     def update(self):
@@ -221,7 +265,7 @@ class Plant(pygame.sprite.Sprite):
                     self.ultimo_sol = pygame.time.get_ticks()
                     self.sun_time = randint(4000,20000)
             if self.num == 1 or self.num == 2:
-                self.target = [z for z in self.target if z.hp >0]
+                self.target = [z for z in self.target if z.hp > 0]
                 for zombie in zombies:
                     if abs(zombie.rect.bottom - self.rect.bottom) < 40:
                         if zombie not in self.target:
@@ -348,8 +392,8 @@ def giro_palanca():
     conteo = Counter(numeros)
     numero_repetido, veces_repetido = conteo.most_common(1)[0]
     if veces_repetido == 3:
-        print(numero_repetido)
-        print(veces_repetido)
+#        print(numero_repetido)
+#        print(veces_repetido)
         if numero_repetido != 4 and numero_repetido != 5:
             for i in range(3):
                 plant = Plant(numero_repetido,WIDTH//2-randint(50,100),100)
@@ -357,7 +401,7 @@ def giro_palanca():
                 cartas_activas.append(plant)
         else:
             if numero_repetido == 4:
-                for i in range(10):
+                for i in range(20):
                     sun = Sun(WIDTH//2-randint(50,100),100)
                     suncrown = SunCrown(sun)
                     all_sprites.add(sun, suncrown)
@@ -368,8 +412,8 @@ def giro_palanca():
                     all_sprites.add(diam)
                     diams.add(diam)
     elif veces_repetido == 2:
-        print(numero_repetido)
-        print(veces_repetido)
+#        print(numero_repetido)
+#        print(veces_repetido)
         if numero_repetido != 4 and numero_repetido != 5:
             plant = Plant(numero_repetido,WIDTH//2-randint(50,100),100)
             all_sprites.add(plant)
@@ -401,7 +445,6 @@ for img in stick_list:
 diam_img = pygame.image.load("img/diam1.png")
 
 fond_img = pygame.image.load("img/fond.png")
-#fond_img.set_colorkey(WHITE)
 
 zombie_hp = [200,370,1100]
 plant_hp = [100,100,100,4000]
@@ -430,13 +473,15 @@ plants = pygame.sprite.Group()
 palanca = Palanca()
 all_sprites.add(palanca)
 img_tragamonedas = []
-zombie_spawn_time = 10000
+
 zombie_count = 0
 sun_spawn_time = randint(3000,9000)
 money = 0
 
 carga1 = False
-
+game_start_time = pygame.time.get_ticks()
+zombie_spawn_time = game_start_time + 25000
+max_zombies_en_panatalla = 8
 running = True
 while running:
     clock.tick(60)
@@ -517,7 +562,14 @@ while running:
                         imagen_fantasma = None
     if carga1:
         carga1 = False
+#        for p in all_sprites:
+#            if isinstance(palanca, Palanca):
+#                pass
+#            else:           
+#                p.kill()
         all_sprites.empty()
+        zombies.empty()
+        plants.empty()
         palanca = Palanca()
         all_sprites.add(palanca)
         score = 50
@@ -527,12 +579,13 @@ while running:
     for zombie in zombies:
         for guisante in guisantes:
             if pygame.sprite.collide_rect(zombie,guisante):
-                guisante.kill()
-                zombie.hp -= 20
-                if guisante.num == 1:
-                    zombie.state = 1
-                    zombie.cooldown_ataque = 1000
-                    zombie.last_hit = pygame.time.get_ticks()
+                if abs(guisante.rect.centery - zombie.rect.centery) < 50: 
+                    guisante.kill()
+                    zombie.hp -= 20
+                    if guisante.num == 1:
+                        zombie.state = 1
+                        zombie.cooldown_ataque = 1000
+                        zombie.last_hit = pygame.time.get_ticks()
               
     if now > sun_spawn_time:
         sun = Sun(randint(50,600),0,1)
@@ -541,23 +594,34 @@ while running:
         suns.add(sun)
         sun_spawn_time = now + randint(8000,11000)
 
-    if now > zombie_spawn_time:
-        if zombie_count > 40:        
-            zombie = Zombie(random.choice([0,0,0,0,0,0,0,0,1,1,2]),plants)
+    if len(zombies) < max_zombies_en_pantalla:
+        if now > zombie_spawn_time:
+            elapsed = now - game_start_time
+            if elapsed < 95000:
+                current_interval = randint(9000,11000)
+                tipo = 0
+            elif elapsed < 360000:
+                max_zombies_en_pantalla += 1
+                current_interval = randint(6000,8000)
+                tipo = random.choice([0,0,0,0,1])
+
+            else:
+                extra_dificultad = (elapsed - 180000)//30000 * 300
+                current_interval = max(1800,4000 - extra_dificultad)
+                
+                if zombie_count > 40:
+                    tipo = random.choice([0,0,0,0,0,0,0,0,1,1,2])
+                else:
+                    tipo = random.choice([0,0,0,0,1])
+            
+            
+            
+            zombie = Zombie(tipo, plants)    
             all_sprites.add(zombie)
             zombies.add(zombie)
             zombie_count += 1
-        elif zombie_count > 7:
-            zombie = Zombie(random.choice([0,0,0,0,1]),plants)
-            all_sprites.add(zombie)
-            zombies.add(zombie)
-            zombie_count += 1
-        else:
-            zombie = Zombie(0,plants)
-            all_sprites.add(zombie)
-            zombies.add(zombie)
-            zombie_count += 1
-        zombie_spawn_time = now + 7000
+            print(zombie_count)
+            zombie_spawn_time = now + current_interval
 
     for zombie in zombies:
         if zombie.rect.right < 0:
