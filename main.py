@@ -271,9 +271,11 @@ class Plant(pygame.sprite.Sprite):
                         if zombie not in self.target:
                             self.target.append(zombie)
                 if self.target:
-                    if now - self.ultimo_ataque >= self.velocidad_ataque:
-                        self.shoot()
-                        self.ultimo_ataque = pygame.time.get_ticks()
+                    for t in self.target:
+                        if t.rect.left < WIDTH:                    
+                            if now - self.ultimo_ataque >= self.velocidad_ataque:
+                                self.shoot()
+                                self.ultimo_ataque = pygame.time.get_ticks()
         elif self.state == 0:
             if now - self.start_time >= self.spawn_time:
                 self.kill() 
