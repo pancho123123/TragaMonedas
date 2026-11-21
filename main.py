@@ -121,7 +121,7 @@ def cargar_frames(carpeta, cantidad, scalex, scaley ):
 
 ZOMBIE_ASSETS[0] = cargar_frames("1",202,105,120)
 ZOMBIE_ASSETS[1] = cargar_frames("2",202,100,140)
-ZOMBIE_ASSETS[2] = cargar_frames("1",120,115,135)
+ZOMBIE_ASSETS[2] = cargar_frames("3",120,115,135)
 
 class Zombie(pygame.sprite.Sprite):
     def __init__(self,tipo,plants):
@@ -601,7 +601,7 @@ while running:
     if len(zombies) < max_zombies_en_pantalla:
         if now > zombie_spawn_time:
             elapsed = now - game_start_time 
-            max_zomies_en_pantalla = min(30,3 + elapsed//45000)
+            max_zombies_en_pantalla = min(30,3 + elapsed//45000)
             if elapsed < 60000:
                 current_interval = randint(9000,11000)
                 tipo = 0
